@@ -1,0 +1,59 @@
+[
+    {
+        "name": "telegram-bot/api",
+        "version": "2.2.6",
+        "version_normalized": "2.2.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/TelegramBot/Api.git",
+            "reference": "fd6927584ba77eb8d54c42ae912c387c8d9f5314"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/TelegramBot/Api/zipball/fd6927584ba77eb8d54c42ae912c387c8d9f5314",
+            "reference": "fd6927584ba77eb8d54c42ae912c387c8d9f5314",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.5.0"
+        },
+        "require-dev": {
+            "codeception/codeception": "*",
+            "phpunit/phpunit": "4.*",
+            "squizlabs/php_codesniffer": "2.*"
+        },
+        "time": "2016-12-12 11:36:44",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "TelegramBot\\Api\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Ilya Gusev",
+                "email": "mail@igusev.ru",
+                "homepage": "https://php-cat.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "PHP Wrapper for Telegram Bot API",
+        "homepage": "https://github.com/TelegramBot/Api",
+        "keywords": [
+            "bot",
+            "bot api",
+            "php",
+            "telegram"
+        ]
+    }
+]
