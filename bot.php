@@ -30,7 +30,7 @@ $token		= $set_bot['token']; // токен бота
 
 
 $bot = new \TelegramBot\Api\BotApi($token);
-
+$slash = false;
 if(mb_substr($message, 0, 1) == '/'){
     $message = mb_substr($message, 1);
     $slash = true;
@@ -39,6 +39,14 @@ if(mb_substr($message, 0, 1) == '/'){
 
 // Если бот отключен, прерываем все!
 if($set_bot['on_off'] == "off") exit;
+
+// Получаем всю информацию о пользователе
+$user = DB::$the->query("SELECT ban,cat FROM `sel_users` WHERE `chat` = {$chat} ");
+$user = $user->fetch(PDO::FETCH_ASSOC);
+
+// Если юзер забанен, отключаем для него все!
+if($user['ban'] == "3") exit;
+
 
 if ($message == "↪Назад") {
 
@@ -95,17 +103,9 @@ VALUES (:username, :first_name, :last_name, :chat, :time)");
 	$q->execute($params);
 }
 
-// Получаем всю информацию о пользователе
-$user = DB::$the->query("SELECT ban,cat FROM `sel_users` WHERE `chat` = {$chat} ");
-$user = $user->fetch(PDO::FETCH_ASSOC);
-
-// Если юзер забанен, отключаем для него все!
-if($user['ban'] == "1") exit;
-
 // Если сделан запрос оплата
 if ($message == "оплата" or $message == "Оплата") {
-    $chat = escapeshellarg($chat);
-    exec('bash -c "exec nohup setsid wget -q -O - '.$set_bot['url'].'/verification.php?chat='.$chat.' > /dev/null 2>&1 &"');
+	require_once("./verification.php");
     exit;
 }
 
@@ -134,7 +134,6 @@ if ($message == "заказы" or $message == "Заказы") {
 	$bot->sendMessage($chat, $text, false, null, null, $keyboard);
 	exit;
 }*/
-
 if ($message == "0" or $message == "↪️Отмена" or $message == "Отмена") {
 
 	DB::$the->prepare("UPDATE sel_users SET cat=? WHERE chat=? ")->execute(array("0", $chat));
@@ -143,36 +142,87 @@ if ($message == "0" or $message == "↪️Отмена" or $message == "Отме
 	DB::$the->prepare("UPDATE sel_keys SET block_user=? WHERE block_user=? ")->execute(array('0', $chat));
 	DB::$the->prepare("UPDATE sel_users SET id_key=? WHERE chat=? ")->execute(array('0', $chat));
 	DB::$the->prepare("UPDATE sel_users SET pay_number=? WHERE chat=? ")->execute(array('pay_number', $chat));
+	DB::$the->prepare("UPDATE sel_users SET ban=ban+1 WHERE chat=? ")->execute(array($chat));
+	$warn = DB::$the->query("SELECT ban FROM sel_users WHERE chat= {$chat} order by id limit 1");
+	$warn = $warn->fetch(PDO::FETCH_ASSOC)['ban'];
+	switch($warn){
+		case 1:
+			$warn = 'Первое предупреждение!';
+			break;
+		case 2:
+			$warn = 'Второе предупреждение!';
+			break;
+		case 3:
+			$warn = 'Вы успешно забанены!';
+			break;
+	}
 
 	$keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup([['♻️Главное меню']/*, ['📦Оплата', '💰Заказы', '↪️Отмена'], ['🆘Помощь']*/], null, true);
-
+	$text = "🚫 Заказ отменен!
+	Запрещено резервировать товар без оплаты более трех раз.
+	{$warn}";
 // Отправляем все это пользователю
-	$bot->sendMessage($chat, "🚫 Заказ отменен!", false, null, null, $keyboard);
+	$bot->sendMessage($chat, $text, false, null, null, $keyboard);
 
 	exit;
 }
 
+if ($message == 'ПРАЙС' || $message == '33'){
+    $cats = DB::$the->query("SELECT id,name,mesto FROM `sel_category` order by `mesto` ");
+	$cats = $cats->fetchAll();
+    $text = '';
+    $keys = [];
+    $keys[][] = 'Главное меню';
+    $i = 0;
+    $k = 0;
+	if (count($cats) > 0){
+    	foreach($cats as $cat) {
+			$subcats = DB::$the->query("SELECT id, name, mesto, amount FROM sel_subcategory WHERE id_cat = ".$cat['id']." order by mesto ");
+			$subcats = $subcats->fetchAll();
+			if (count($subcats) > 0) {
+				$text .= $cat['mesto'] . '. ' . urldecode($cat['name']) . ": \n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
+				foreach ($subcats as $subcat) {
+					$text .= urldecode($subcat['name']) . " (" . $subcat['amount'] . "руб) - ответ \"" .
+						$subcat['id'] . "\" \n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
+					$keys[][] = $subcat['id'] . " - " . urldecode($cat['name']) . " - ". urldecode($subcat['name']) .
+						" (" . $subcat['amount'] ."руб)";
+				}
+				$text .= "\n";
+			}
+		}
+    }
+    $keys[][] = 'Назад';
+	$text .= "Сделайте выбор и введите соответствующий номер \n";
+    $text .= "\n".$set_bot['footer'];
+
+
+    $keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup($keys, null, true);
+    $bot->sendMessage($chat, $text, false, null, null, $keyboard);
+    exit;
+}
+
 if(/*$user['cat'] == 0 &&*/ !empty($message)){
+	$message = strstr($message, ' ', true);
 	// Проверяем наличие категории
-	$cat = DB::$the->query("SELECT id FROM `sel_category` WHERE `name` = '".urlencode($message)."' ");
+	$cat = DB::$the->query("SELECT id FROM `sel_subcategory` WHERE `name` = '".urlencode($message)."' ");
 	$cat = $cat->fetchAll();
 
-	if (count($cat) != 0){
+	if (count($cat) > 0 && !$slash){
 		$message = urlencode($message);
 		$output = "";
-		require_once "./select_cat.php";
+		require_once "./select.php";
 		exit;
 	} else{
-        $cat = DB::$the->query("SELECT id FROM `sel_category` WHERE `id` = '".urlencode($message)."' ");
-        $cat = $cat->fetchAll();
+		$cat = DB::$the->query("SELECT id FROM `sel_subcategory` WHERE `id` = '".urlencode($message)."' ");
+		$cat = $cat->fetchAll();
 
-        if (count($cat) != 0){
-            $message = urlencode($message);
-            $output = "";
-            require_once "./select_cat.php";
-            exit;
-        }
-    }
+		if (count($cat) != 0){
+			$message = urlencode($message);
+			$output = "";
+			require_once "./select.php";
+			exit;
+		}
+	}
 }
 /*if($user['cat'] > 0 && !empty($message)){
 	// Проверяем наличие товара
@@ -186,33 +236,8 @@ if(/*$user['cat'] == 0 &&*/ !empty($message)){
 		exit;
 	}
 }*/
-
-if ($message == 'ПРАЙС' || $message == '33'){
-    $cats = DB::$the->query("SELECT id,name,mesto FROM `sel_category` order by `mesto` ");
-    $text = '';
-    $keys = [];
-    $keys[][] = 'Главное меню';
-    $i = 0;
-    $k = 0;
-    while($cat = $cats->fetch()) {
-        $text .= $cat['mesto'].'. '.urldecode($cat['name']).": \n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
-        $subcats = DB::$the->query("SELECT id, name, mesto FROM `sel_subcategory` WHERE `id_cat` = ".$cat['id']." order by `mesto` ");
-        while($subcat = $subcats->fetch()) {
-            $text .= urldecode($subcat['name'])." или /".$subcat['id']." \n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
-            $keys[][] = urldecode($subcat['name']);
-        }
-        $text .= "\n";
-    }
-    $keys[][] = 'Назад';
-    $text .= "\n".$set_bot['footer'];
-
-
-    $keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup($keys, null, true);
-    $bot->sendMessage($chat, $text, false, null, null, $keyboard);
-    exit;
-}
-
 $text = urldecode($set_bot['hello'])."\n\n";
+$text .= "\n".$set_bot['footer'];
 $keys[][] = 'ПРАЙС';
 $keys[][] = 'Выход';
 $keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup($keys, null, true);

@@ -22,8 +22,7 @@ DB::$the->prepare("UPDATE sel_users SET pay_number=? WHERE chat=? ")->execute(ar
 
 $curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
 	'chat_id' => $us['block_user'],
-	'text' => "�� Вы не произвели оплату в течение {$set_bot['block']} минут. Этот ключ выставлен на продажу. 
-Для того чтобы купить ключ, выберите товар заново",
+	'text' => "�� Вы не произвели оплату в течение {$set_bot['block']} минут. ",
 	
 	)); 
 }
@@ -32,7 +31,7 @@ $curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
 
 
 // Берем информацию о разделе
-$row = DB::$the->query("SELECT * FROM `sel_subcategory` WHERE `name` = '".$message."' and `id_cat` = '".$user['cat']."' ");
+$row = DB::$the->query("SELECT * FROM `sel_subcategory` WHERE `id` = '".$message."' ");
 $subcat = $row->fetch(PDO::FETCH_ASSOC);
 
 // Берем информацию о категории
@@ -78,23 +77,26 @@ $set_qiwi = $set_qiwi->fetch(PDO::FETCH_ASSOC);
 DB::$the->prepare("UPDATE sel_users SET pay_number=? WHERE chat=? ")->execute(array($set_qiwi['number'], $chat)); 
 	$cat_name = urldecode($cat['name']);
 	$subcat_name = urldecode($subcat['name']);
-$text = "Вы выбрали:
-{$cat_name}
-{$subcat_name}
-
-Переведите {$subcat['amount']} руб на Qiwi +{$set_qiwi['number']}
+$text = "Вам зарезервировано: {$subcat_name}
+Район: {$cat_name}
+Переведите на кошелек Qiwi
+№+{$set_qiwi['number']}
+Сумму: {$subcat['amount']} руб
 
 С комментарием: ".$key['id']."
 
 После того как вы переведете эту сумму с этим комментарием, отправьте боту сообщение: оплата
-
+Резерв длится {$set_bot['block']}мин. В течении этого времени оплатите заказ.
+Внимание!!!
+Оплата производится ОДНИМ платежом.
+Оплата частями не принимается!!! Сумма должна быть не меньше прайсовой!!!
 
 Для отмены заказа: 0 или Отмена
 ";
 
 
 // Отправляем текст
-$keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup([['↪️Отмена', '📦Оплата']], null, true);
+$keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup([['↪️Отмена', 'Оплата']], null, true);
 $bot->sendMessage($chat, $text, false, null, null, $keyboard);
 
 

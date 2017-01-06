@@ -1,18 +1,12 @@
 ﻿<?
-require 'classes/Curl.php';
+/*require 'classes/Curl.php';
 require 'classes/PDO.php';
 
 $curl = new Curl();
 
 
 
-$chat = intval($_GET['chat']);
-
-// Получаем информацию из БД о настройках бота
-$set_bot = DB::$the->query("SELECT * FROM `sel_set_bot` ");
-$set_bot = $set_bot->fetch(PDO::FETCH_ASSOC);
-$token		= $set_bot['token']; // токен бота
-
+$chat = intval($_GET['chat']);*/
 
 // Получаем всю информацию о настройках киви
 $set_qiwi = DB::$the->query("SELECT * FROM `sel_set_qiwi` ");
@@ -46,9 +40,13 @@ $timeout = $user['verification']+$set_bot['verification'];
 $timeout2 = $user['verification']+5;
 
 if($timeout < time()) { // Если давно, то проверяем оплату
-DB::$the->prepare("UPDATE sel_users SET verification=? WHERE chat=? ")->execute(array(time(), $chat)); 
+DB::$the->prepare("UPDATE sel_users SET verification=? WHERE chat=? ")->execute(array(time(), $chat));
+	$curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
+		'chat_id' => $chat,
+		'text' => $key['code'],
 
-require 'classes/qiwi.class.php';
+	));
+	require 'classes/qiwi.class.php';
 
 
 // Получаем всю информацию о настройках киви

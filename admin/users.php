@@ -39,8 +39,7 @@ case 'edit':
 
 <?
 if(isset($_POST['submit'])) {
-
-if($_POST['ban'] < 0) {
+if($_POST['ban'] >= 0) {
 
 $ban=$_POST['ban'];
 
@@ -74,7 +73,7 @@ else
 $row = DB::$the->query("SELECT * FROM `sel_users` WHERE `chat` = '".intval($_GET['chat'])."'");
 $user = $row->fetch(PDO::FETCH_ASSOC);
 
-if($user['ban']==0) { $ban = 'Нет';	}
+if($user['ban']<3) { $ban = 'Нет';	}
 else { $ban = 'Да'; }
 ?>
 <tr>
@@ -96,12 +95,12 @@ else { $ban = 'Да'; }
 <br /><div class="input-group input-group-lg">
 Забанен
 <label class="radio"> 
-  <input type="radio" name="ban" class="form-control" value="1" <?if($user['ban']=='1')echo'checked';?>>
+  <input type="radio" name="ban" class="form-control" value="3" <?if($user['ban']==3)echo'checked';?>>
    Да
 </label>
 <hr>
 <label class="radio">
-  <input type="radio" name="ban" class="form-control" value="0" <?if($user['ban']=='0')echo'checked';?>>
+  <input type="radio" name="ban" class="form-control" value="0" <?if($user['ban']< 3)echo'checked';?>>
   Нет
 </label>
 <hr>
@@ -143,7 +142,7 @@ $start=($max*$page)-$max;
 
 $query = DB::$the->query("SELECT * FROM `sel_users` order by `id` ASC LIMIT $start, $max");
 while($user = $query->fetch()) {
-if($user['ban']==0) { $ban = 'Нет';	}
+if($user['ban'] < 3) { $ban = 'Нет';	}
 else { $ban = 'Да'; }
 ?>
 <tr>
