@@ -18,18 +18,10 @@
 $name_cat = DB::$the->query("SELECT name, id FROM `sel_category` WHERE `name` = '".$message."' ");
 $name_cat = $name_cat->fetch(PDO::FETCH_ASSOC);
 
-// Проверяем наличие ключей
-$total = DB::$the->query("SELECT id FROM `sel_keys` where `id_cat` = '".$name_cat['id']."' and `sale` = '0' and `block` = '0' ");
-$total = $total->fetchAll();
-
-if(count($total) == 0) // Если пусто, вызываем ошибку
-{ 
-DB::$the->prepare("UPDATE sel_users SET cat=? WHERE chat=? ")->execute(array("0", $chat)); 	
-// Отправляем текст
-$bot->sendMessage($chat, '⛔ Данный товар закончился!');
-exit;	
+if (count($name_cat) == 0){
+	$name_cat = DB::$the->query("SELECT name, id FROM `sel_category` WHERE `id` = '".$message."' ");
+	$name_cat = $name_cat->fetch(PDO::FETCH_ASSOC);
 }
-
 DB::$the->prepare("UPDATE sel_users SET cat=? WHERE chat=? ")->execute(array($name_cat['id'], $chat));
 
 $text = "Вы выбрали: ".urldecode($name_cat['name'])."\n\n";
@@ -40,14 +32,14 @@ $keys = [];
 $i = 0;
 $k = 0;
 while($cat = $query->fetch()) {
-	$text .= urldecode($cat['name'])."\n\n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
+	$text .= urldecode($cat['name'])." или /".$cat['id']." \n\n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
 
 	// if($k >= 3){ $i++; $k = 0;}
 	$keys[][] = urldecode($cat['name']);
 	// $k++;
 }
 
-$keys[][] = '🆘Помощь';
+//$keys[][] = '🆘Помощь';
 $keys[][] = '🔷Доп. инфо';
 $keys[][] = '↪Назад';
 $text .= "\n".$set_bot['footer'];
