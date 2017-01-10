@@ -1,14 +1,14 @@
 <?
 //имя базы
-$dbn = 'u0284566_bt';
+$dbn = $dbn ?: 'u0284566_bt';
 //имя сервера
-$dbh = 'localhost';
+$dbh = $dbh ?: 'localhost';
 //порт
-$dbr = '3306';
+$dbr = $dbr ?: '3306';
 //имя пользователя
-$dbu = 'u0284566_bt';
+$dbu = $dbu ?: 'u0284566_bt';
 //пароль
-$dbp = 'q';
+$dbp = $dbp ?: 'q';
 
   ob_start();
   session_name('sid');

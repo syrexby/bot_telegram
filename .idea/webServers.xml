@@ -2,8 +2,16 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="e4ad11e8-1359-498d-9701-1815fe015dd0" name="bot telegram 2" url="http://92.38.226.12">
+      <webServer id="113944bd-8e08-41dc-b78f-d4351d32a713" name="bot telega" url="http://92.38.226.12">
         <fileTransfer host="92.38.226.12" port="21" rootFolder="/www/qwesdr.ru" password="dfc7df93dfecdf9bdff5dfc1dfffdfe6" username="u0284566">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="2bcf3c8e-eacd-4eae-9b5a-4576fd6a6a8d" name="bot telega home" url="http://92.38.226.12">
+        <fileTransfer host="92.38.226.12" port="21" password="dfc7df93dfecdf9bdff5dfc1dfffdfe6" username="u0284566">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
           </advancedOptions>

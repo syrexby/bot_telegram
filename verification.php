@@ -17,13 +17,11 @@ $user = DB::$the->query("SELECT * FROM `sel_users` WHERE `chat` = {$chat} ");
 $user = $user->fetch(PDO::FETCH_ASSOC);
 
 if($user['id_key'] == '0') {
-
-$curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
-	'chat_id' => $chat,
-	'text' => "🚫 Вы не выбрали ключ!",
-	
-	)); 	
-exit;	
+	$keys[][] = 'ПРАЙС';
+	$keys[][] = 'Выход';
+	$keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup($keys, null, true);
+	$bot->sendMessage($chat, "🚫 Вы не выбрали товар!", false, null, null, $keyboard);
+	exit;	
 }
 
 
@@ -37,10 +35,34 @@ $amount = $amount->fetch(PDO::FETCH_ASSOC);
 
 // Смотрим когда пользователь сделал последний запрос
 $timeout = $user['verification']+$set_bot['verification'];
-$timeout2 = $user['verification']+5;
+$timeout2 = $user['verification']+15;
 
-if($timeout < time()) { // Если давно, то проверяем оплату
+if($timeout > time()) {
+	$sec = $timeout-time();
+	$text = '❌ Подождите!
+Следующую проверку можно сделать только через '.$sec.' сек.';
+
+
+	$curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
+		'chat_id' => $chat,
+		'text' => $text,
+	));
+	exit;
+} else { // Если давно, то проверяем оплату
+
 DB::$the->prepare("UPDATE sel_users SET verification=? WHERE chat=? ")->execute(array(time(), $chat));
+	$curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
+		'chat_id' => $chat,
+		'text' => "Одну минуту... \nПроверяем...",
+
+	));
+	sleep(2);
+	$curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
+		'chat_id' => $chat,
+		'text' => "ТОВАР НЕ ОПЛАЧЕН!\nПосле оплаты - нажмите кнопку \"Оплата\".
+Для отмены заказа напишите - Отмена или 0",
+	));
+	exit;
 	$curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
 		'chat_id' => $chat,
 		'text' => $key['code'],
@@ -175,20 +197,6 @@ $curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
 }
 exit;		
 }
-else // Вызываем ошибку антифлуда
-{
-if($timeout2 < time()) {	
-$sec = $timeout-time();	
-$text = '❌ Подождите!
-Следующую проверку можно сделать только через '.$sec.' сек.';
-	
-
-$curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
-	'chat_id' => $chat,
-	'text' => $text,
-	)); 
-}
-}	
 	
 exit;
 ?>

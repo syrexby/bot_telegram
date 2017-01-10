@@ -1,7 +1,7 @@
 <?php
 error_reporting(1) ; // включить все виды ошибок, включая  E_STRICT
 ini_set('display_errors', 'On');  // вывести на экран помимо логов
-
+//$dbp = 's';
 require 'classes/Curl.php';
 require 'classes/PDO.php';
 require 'vendor/autoload.php';
@@ -9,7 +9,6 @@ require 'vendor/autoload.php';
  * @var \TelegramBot\Api\BotApi $bot
  */
 $curl = new Curl();
-
 
 $json = file_get_contents('php://input'); // Получаем запрос от пользователя
 $action = json_decode($json, true); // Расшифровываем JSON
@@ -134,7 +133,7 @@ if ($message == "заказы" or $message == "Заказы") {
 	$bot->sendMessage($chat, $text, false, null, null, $keyboard);
 	exit;
 }*/
-if ($message == "0" or $message == "↪️Отмена" or $message == "Отмена") {
+if ($message == "0" or $message == "↪️Отмена" or $message == "Отмена" or $message == "Otmena") {
 
 	DB::$the->prepare("UPDATE sel_users SET cat=? WHERE chat=? ")->execute(array("0", $chat));
 	DB::$the->prepare("UPDATE sel_keys SET block=? WHERE block_user=? ")->execute(array("0", $chat));
@@ -166,7 +165,59 @@ if ($message == "0" or $message == "↪️Отмена" or $message == "Отме
 
 	exit;
 }
+// Переводим обычные цифры в эмодзи
+function idToEmoji($id){
+	if (isset($id)){
+		$numbers = str_split($id);
+		$numbers_result = [];
+		foreach ($numbers as $number){
+			switch ($number){
+				case 0:
+					$numbers_result[] = '0⃣';
+					break;
+				case 1:
+					$numbers_result[] = '1⃣';
+					break;
+				case 2:
+					$numbers_result[] = '2⃣';
+					break;
+				case 3:
+					$numbers_result[] = '3⃣';
+					break;
+				case 4:
+					$numbers_result[] = '4⃣';
+					break;
+				case 5:
+					$numbers_result[] = '5⃣';
+					break;
+				case 6:
+					$numbers_result[] = '6⃣';
+					break;
+				case 7:
+					$numbers_result[] = '7⃣';
+					break;
+				case 8:
+					$numbers_result[] = '8⃣';
+					break;
+				case 9:
+					$numbers_result[] = '9⃣';
+					break;
+			}
+		}
+	}
+	return isset($numbers_result) ? implode($numbers_result) : $id;
+}
+// Переводим эмодзи в обычные цифры
+function emojiToId($id){
+	$numbers_result = $id;
+	$emodji = ['0⃣', '1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '9⃣'];
+	$nums = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+	$numbers_result = str_replace($emodji, $nums, $numbers_result);
+	
+	return $numbers_result;
+}
 
+//$message = 'ПРАЙС';
 if ($message == 'ПРАЙС' || $message == '33'){
     $cats = DB::$the->query("SELECT id,name,mesto FROM `sel_category` order by `mesto` ");
 	$cats = $cats->fetchAll();
@@ -184,7 +235,7 @@ if ($message == 'ПРАЙС' || $message == '33'){
 				foreach ($subcats as $subcat) {
 					$text .= urldecode($subcat['name']) . " (" . $subcat['amount'] . "руб) - ответ \"" .
 						$subcat['id'] . "\" \n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
-					$keys[][] = $subcat['id'] . " - " . urldecode($cat['name']) . " - ". urldecode($subcat['name']) .
+					$keys[][] = idToEmoji($subcat['id']) . " - " . urldecode($cat['name']) . " - ". urldecode($subcat['name']) .
 						" (" . $subcat['amount'] ."руб)";
 				}
 				$text .= "\n";
@@ -201,8 +252,10 @@ if ($message == 'ПРАЙС' || $message == '33'){
     exit;
 }
 
-if(/*$user['cat'] == 0 &&*/ !empty($message)){
-	$message = strstr($message, ' ', true);
+if(!empty($message)){
+	$message = mb_strstr($message, ' ', true) ?: $message;
+	$message = emojiToId($message);
+//	$bot->sendMessage($chat, $message);
 	// Проверяем наличие категории
 	$cat = DB::$the->query("SELECT id FROM `sel_subcategory` WHERE `name` = '".urlencode($message)."' ");
 	$cat = $cat->fetchAll();

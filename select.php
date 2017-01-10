@@ -3,33 +3,6 @@
 $user = DB::$the->query("SELECT ban,id_key,cat FROM `sel_users` WHERE `chat` = {$chat} ");
 $user = $user->fetch(PDO::FETCH_ASSOC);
 
-
-$nulled = DB::$the->query("SELECT id FROM `sel_keys` where `sale` = '0' and `block` = '1' and `block_time` < '".(time()-(60*$set_bot['block']))."' ");
-$nulled = $nulled->fetchAll();
-
-if(count($nulled > 0)){
-
-
-$query = DB::$the->query("SELECT block_user FROM `sel_keys` where `sale` = '0' and `block` = '1' and `block_time` < '".(time()-(60*$set_bot['block']))."' order by `id` ");
-while($us = $query->fetch()) {
-	
-DB::$the->prepare("UPDATE sel_keys SET block=? WHERE block_user=? ")->execute(array("0", $us['block_user'])); 
-DB::$the->prepare("UPDATE sel_keys SET block_time=? WHERE block_user=? ")->execute(array('0', $us['block_user'])); 
-DB::$the->prepare("UPDATE sel_keys SET block_user=? WHERE block_user=? ")->execute(array('0', $us['block_user']));  
-
-DB::$the->prepare("UPDATE sel_users SET id_key=? WHERE chat=? ")->execute(array('0', $us['block_user'])); 
-DB::$the->prepare("UPDATE sel_users SET pay_number=? WHERE chat=? ")->execute(array('0', $us['block_user'])); 
-
-$curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
-	'chat_id' => $us['block_user'],
-	'text' => "�� Вы не произвели оплату в течение {$set_bot['block']} минут. ",
-	
-	)); 
-}
-}	
-	
-
-
 // Берем информацию о разделе
 $row = DB::$the->query("SELECT * FROM `sel_subcategory` WHERE `id` = '".$message."' ");
 $subcat = $row->fetch(PDO::FETCH_ASSOC);
@@ -69,8 +42,8 @@ DB::$the->prepare("UPDATE sel_keys SET block=? WHERE id=? ")->execute(array("1",
 DB::$the->prepare("UPDATE sel_keys SET block_user=? WHERE id=? ")->execute(array($chat, $key['id'])); 
 DB::$the->prepare("UPDATE sel_keys SET block_time=? WHERE id=? ")->execute(array(time(), $key['id'])); 
 
-DB::$the->prepare("UPDATE sel_users SET id_key=? WHERE chat=? ")->execute(array($key['id'], $chat)); 
-	
+DB::$the->prepare("UPDATE sel_users SET id_key=? WHERE chat=? ")->execute(array($key['id'], $chat));
+	DB::$the->prepare("UPDATE sel_users SET verification=? WHERE chat=? ")->execute(array(time(), $chat));
 $set_qiwi = DB::$the->query("SELECT number FROM `sel_set_qiwi` WHERE `active` = '1' ");
 $set_qiwi = $set_qiwi->fetch(PDO::FETCH_ASSOC);	
 	
