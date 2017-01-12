@@ -2,7 +2,7 @@
 session_start();
 ob_start();
 require '../style/head.php';
-require '../classes/PDO.php';
+require '../bot1/classes/PDO.php';
 require '../classes/My_Class.php';
 
 $My_Class->title("Админ-панель");

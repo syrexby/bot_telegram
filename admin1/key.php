@@ -3,27 +3,27 @@ ob_start();
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 require '../style/head.php';
 require '../classes/My_Class.php';
-require '../classes/PDO.php';
+require '../bot1/classes/PDO.php';
 
 if (!isset($_COOKIE['secretkey']) or $_COOKIE['secretkey'] != $secretkey) {
-header("Location: /admin");		
+header("Location: /admin1");		
 exit;
 }
 
-$row = DB::$the->query("SELECT name FROM `sel_category` WHERE `id` = '".intval($_GET['category'])."'");
+$row = DB::$the->query("SELECT name, id FROM `sel_category` WHERE `id` = '".intval($_GET['category'])."'");
 $cat = $row->fetch(PDO::FETCH_ASSOC);
 
-$row = DB::$the->query("SELECT name FROM `sel_subcategory` WHERE `id` = '".intval($_GET['subcategory'])."'");
-$subcat = $row->fetch(PDO::FETCH_ASSOC);
+$row = DB::$the->query("SELECT name, id FROM `sel_subsubcategory` WHERE `id` = '".intval($_GET['subsubcategory'])."'");
+$subsubcat = $row->fetch(PDO::FETCH_ASSOC);
 
-$My_Class->title("Подкатегория: ".urldecode($subcat['name']));
+$My_Class->title("Подкатегория: ".urldecode($subsubcat['name']));
 
 
 if(isset($_GET['category'])){
 $header = DB::$the->query("SELECT id FROM `sel_category` WHERE `id` = '".intval($_GET['category'])."' ");
 $header = $header->fetchAll();
 if(count($header) == 0){
-header("Location: /admin");		
+header("Location: /admin1");		
 exit;
 }}	
 
@@ -31,7 +31,7 @@ if(isset($_GET['subcategory'])){
 $header = DB::$the->query("SELECT id FROM `sel_subcategory` WHERE `id` = '".intval($_GET['subcategory'])."' ");
 $header = $header->fetchAll();
 if(count($header) == 0){
-header("Location: /admin");		
+header("Location: /admin1");		
 exit;
 }}	
 ?>
@@ -50,7 +50,7 @@ exit;
 if(isset($_GET['cmd'])){$cmd = htmlspecialchars($_GET['cmd']);}else{$cmd = '0';}
 
 if(isset($_GET['category'])){$category = abs(intval($_GET['category']));}else{$category = '0';}
-if(isset($_GET['subcategory'])){$subcategory = abs(intval($_GET['subcategory']));}else{$subcategory = '0';}
+if(isset($_GET['subsubcategory'])){$subsubcategory = abs(intval($_GET['subsubcategory']));}else{$subsubcategory = '0';}
 if(isset($_GET['key'])){$key = abs(intval($_GET['key']));}else{$key = '0';}
 
 switch ($cmd){
@@ -253,8 +253,8 @@ default:
 ?>
 <ol class="breadcrumb">
   <li><a href="/admin">Админ-панель</a></li>
-  <li><a href="subcategory.php?category=<?=$category;?>"><?=urldecode($cat['name']);?></a></li>
-  <li class="active"><?=urldecode($subcat['name']);?></li>
+  <li><a href="subcategory.php?category=<?=$cat['id']?>"><?=urldecode($cat['name']);?></a></li>
+  <li class="active"><?=urldecode($subsubcat['name']);?></li>
 </ol>
 
 <div class="list-group">
@@ -269,8 +269,9 @@ default:
 </div>
 <?
 
-$total = DB::$the->query("SELECT * FROM `sel_keys` where `id_cat` = {$category} and `id_subcat` = {$subcategory} ");
+$total = DB::$the->query("SELECT * FROM `sel_keys` where `id_cat` = {$category} and `id_subsubcat` = {$subsubcategory} ");
 $total = $total->fetchAll();
+
 $max = 5;
 $pages = $My_Class->k_page(count($total),$max);
 $page = $My_Class->page($pages);
@@ -281,7 +282,7 @@ echo '<div class="alert alert-danger">В данной подкатегории �
 }	
 
 echo '<div class="list-group">';
-$query = DB::$the->query("SELECT * FROM `sel_keys` where `id_cat` = {$category} and `id_subcat` = {$subcategory} order by rand() LIMIT $start, $max");
+$query = DB::$the->query("SELECT * FROM `sel_keys` where `id_cat` = {$category} and `id_subsubcat` = {$subsubcategory} order by rand() LIMIT $start, $max");
 while($key = $query->fetch()) {
 if($key['sale'] == 1) {
 $sales = '<font color="red">[ПРОДАН]</font>';
@@ -289,16 +290,16 @@ $sales = '<font color="red">[ПРОДАН]</font>';
 else $sales = null;
 	
 echo '<span class="list-group-item"> <b>'.$key['code'].'</b> '.$sales;
-echo '<a href="?cmd=edit&category='.$category.'&subcategory='.$subcategory.'&key='.$key['id'].'"> <span class="badge pull-right"><span class="glyphicon glyphicon-pencil"></span> </a>';
-echo '<a href="?cmd=delete&category='.$category.'&subcategory='.$subcategory.'&key='.$key['id'].'"> <span class="badge pull-right"><span class="glyphicon glyphicon-remove"></span> </a>';
+echo '<a href="?cmd=edit&category='.$category.'&subsubcategory='.$subsubcategory.'&key='.$key['id'].'"> <span class="badge pull-right"><span class="glyphicon glyphicon-pencil"></span> </a>';
+echo '<a href="?cmd=delete&category='.$category.'&subsubcategory='.$subsubcategory.'&key='.$key['id'].'"> <span class="badge pull-right"><span class="glyphicon glyphicon-remove"></span> </a>';
 echo '</span>';
 }
 echo '</div>';
 
-if ($pages>1) $My_Class->str('?category='.$category.'&subcategory='.$subcategory.'&',$pages,$page); 
+if ($pages>1) $My_Class->str('?category='.$category.'&subsubcategory='.$subsubcategory.'&',$pages,$page); 
 ?>
 <div class="list-group">
-<a class="list-group-item" href="key.php?cmd=remove_sale&category=<?=$category;?>&subcategory=<?=$subcategory;?>">
+<a class="list-group-item" href="key.php?cmd=remove_sale&category=<?=$category;?>&subsubcategory=<?=$subsubcategory;?>">
 <span class="glyphicon glyphicon-remove"></span> Удалить все не проданные ключи
 </a>
 </div>

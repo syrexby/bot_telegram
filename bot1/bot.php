@@ -4,12 +4,11 @@ ini_set('display_errors', 'On');  // вывести на экран помимо
 //$dbp = 's';
 require 'classes/Curl.php';
 require 'classes/PDO.php';
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 /**
  * @var \TelegramBot\Api\BotApi $bot
  */
 $curl = new Curl();
-
 $json = file_get_contents('php://input'); // Получаем запрос от пользователя
 $action = json_decode($json, true); // Расшифровываем JSON
 

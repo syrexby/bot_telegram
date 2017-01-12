@@ -2,10 +2,10 @@
 ob_start();
 require '../style/head.php';
 require '../classes/My_Class.php';
-require '../classes/PDO.php';
+require '../bot1/classes/PDO.php';
 
 if (!isset($_COOKIE['secretkey']) or $_COOKIE['secretkey'] != $secretkey) {
-header("Location: /admin");		
+header("Location: /admin1");		
 exit;
 }
 

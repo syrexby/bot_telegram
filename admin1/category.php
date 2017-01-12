@@ -2,10 +2,10 @@
 ob_start();
 require '../style/head.php';
 require '../classes/My_Class.php';
-require '../classes/PDO.php';
+require '../bot1/classes/PDO.php';
 
 if (!isset($_COOKIE['secretkey']) or $_COOKIE['secretkey'] != $secretkey) {
-header("Location: /admin");		
+header("Location: /admin1");		
 exit;
 }
 
@@ -15,7 +15,7 @@ if(isset($_GET['category'])){
 $header = DB::$the->query("SELECT id FROM `sel_category` WHERE `id` = '".intval($_GET['category'])."' ");
 $header = $header->fetchAll();
 if(count($header) == 0){
-header("Location: /admin");		
+header("Location: /admin1");		
 exit;
 }}	
 

@@ -1,13 +1,13 @@
 <?php 
 ob_start();
 require '../style/head.php';
-require '../classes/PDO.php';
+require '../bot1/classes/PDO.php';
 require '../classes/My_Class.php';
 
 $My_Class->title("Пользователи");
 
 if (!isset($_COOKIE['secretkey']) or $_COOKIE['secretkey'] != $secretkey) {
-header("Location: /admin");		
+header("Location: /admin1");		
 exit;
 }
 
