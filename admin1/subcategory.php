@@ -52,7 +52,7 @@ case 'create':
 
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li><a href="subcategory.php?category=<?=$category;?>"><?=urldecode($cat['name']);?></a></li>
   <li class="active">Создание раздела</li>
 </ol>
@@ -96,7 +96,7 @@ break;
 case 'edit':
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li><a href="subcategory.php?category=<?=$category;?>"><?=urldecode($cat['name']);?></a></li>
   <li class="active">Редактирование раздела</li>
 </ol>
@@ -146,7 +146,7 @@ $row = DB::$the->query("SELECT name FROM `sel_subcategory` WHERE `id` = {$subcat
 $subcat = $row->fetch(PDO::FETCH_ASSOC);
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li><a href="subcategory.php?category=<?=$category;?>"><?=urldecode($cat['name']);?></a></li>
   <li class="active">Удаление раздела: <b><?=$subcat['name'];?></b></li>
 </ol>
@@ -176,7 +176,7 @@ default:
 
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li><a href="category.php">Категории</a></li>
   <li class="active"><?=urldecode($cat['name']);?></li>
 </ol>

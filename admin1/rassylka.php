@@ -20,7 +20,7 @@ $token		= $set_bot['token']; // токен бота
 
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li class="active">Рассылка сообщений</li>
 </ol>
 <?

@@ -31,7 +31,7 @@ switch ($cmd){
     case 'create':
         ?>
         <ol class="breadcrumb">
-            <li><a href="/admin">Админ-панель</a></li>
+            <li><a href="/admin1">Админ-панель</a></li>
             <li><a href="add_info.php">Дополнительная информация</a></li>
             <li class="active">Создание пункта</li>
         </ol>
@@ -78,7 +78,7 @@ switch ($cmd){
         $item_id = (empty($_GET['item'])) ? '0' : $_GET['item'];
         ?>
         <ol class="breadcrumb">
-            <li><a href="/admin">Админ-панель</a></li>
+            <li><a href="/admin1">Админ-панель</a></li>
             <li><a href="add_info.php">Дополнительная информация</a></li>
             <li class="active">Редактирование пункта <?= $item_id ?></li>
         </ol>
@@ -134,7 +134,7 @@ switch ($cmd){
         if(!($item)) {echo '<div class="alert alert-danger">Нет такого пункта</div>'; break;}
         ?>
         <ol class="breadcrumb">
-            <li><a href="/admin">Админ-панель</a></li>
+            <li><a href="/admin1">Админ-панель</a></li>
             <li><a href="add_info.php">Дополнительная информация</a></li>
             <li class="active">Удаление пункта: <b><?= $item_id ?></b></li>
         </ol>
@@ -163,7 +163,7 @@ switch ($cmd){
 
         ?>
         <ol class="breadcrumb">
-            <li><a href="/admin">Админ-панель</a></li>
+            <li><a href="/admin1">Админ-панель</a></li>
             <li class="active">Дополнительная информация</li>
         </ol>
 

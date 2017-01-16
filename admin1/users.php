@@ -32,7 +32,7 @@ case 'edit':
 
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li><a href="users.php">Пользователи</a></li>
   <li class="active">Редактирование</li>
 </ol>
@@ -114,7 +114,7 @@ default:
 
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li class="active">Пользователи</li>
 </ol>
 

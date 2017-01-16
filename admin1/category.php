@@ -39,7 +39,7 @@ switch ($cmd){
 case 'create':
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li><a href="category.php">Категории</a></li>
   <li class="active">Создание категории</li>
 </ol>
@@ -81,7 +81,7 @@ break;
 case 'edit':	
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li><a href="category.php">Категории</a></li>
   <li class="active">Редактирование категории</li>
 </ol>
@@ -130,7 +130,7 @@ $row = DB::$the->query("SELECT * FROM `sel_category` WHERE `id` = '".$category."
 $cat = $row->fetch(PDO::FETCH_ASSOC);
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li><a href="category.php">Категории</a></li>
   <li class="active">Удаление категории: <b><?=urldecode($cat['name']);?></b></li>
 </ol>
@@ -161,7 +161,7 @@ case 'remove_sale':
 
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li><a href="category.php">Категории</a></li>
   <li class="active">Удаление всех проданных ключей</b></li>
 </ol>
@@ -190,7 +190,7 @@ default:
 
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li class="active">Категории</li>
 </ol>
 

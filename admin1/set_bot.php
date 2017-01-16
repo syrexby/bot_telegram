@@ -71,7 +71,7 @@ else
 </script>
 
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li class="active">Настройки бота</li>
 </ol>
 

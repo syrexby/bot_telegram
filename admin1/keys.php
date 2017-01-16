@@ -31,7 +31,7 @@ case 'sale_null':
 
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li class="active">Списки ключей</li>
 </ol>
 
@@ -68,8 +68,8 @@ while($key = $query->fetch()) {
 $cat = DB::$the->query("SELECT name FROM `sel_category` WHERE `id` = {$key['id_cat']} ");
 $cat = $cat->fetch(PDO::FETCH_ASSOC);
 
-$subcat = DB::$the->query("SELECT name FROM `sel_subcategory` WHERE `id` = {$key['id_subcat']} ");
-$subcat = $subcat->fetch(PDO::FETCH_ASSOC);
+$subsubcat = DB::$the->query("SELECT name FROM `sel_subsubcategory` WHERE `id` = {$key['id_subsubcat']} ");
+$subsubcat = $subsubcat->fetch(PDO::FETCH_ASSOC);
 
 $id_user = DB::$the->query("SELECT chat FROM `sel_orders` WHERE `id_key` = {$key['id']} ");
 $id_user = $id_user->fetch(PDO::FETCH_ASSOC);		
@@ -77,8 +77,8 @@ $id_user = $id_user->fetch(PDO::FETCH_ASSOC);
 <tr>
             <td  align="center"><?=$key['id'];?></td>
             <td  align="center"><?=$key['code'];?></td>
-            <td  align="center"><?=$cat['name'];?></td>
-            <td  align="center"><?=$subcat['name'];?></td>
+            <td  align="center"><?=urldecode($cat['name']);?></td>
+            <td  align="center"><?=urldecode($subsubcat['name']);?></td>
 </tr>
 <?	
 
@@ -99,7 +99,7 @@ default:
 
 ?>
 <ol class="breadcrumb">
-  <li><a href="/admin">Админ-панель</a></li>
+  <li><a href="/admin1">Админ-панель</a></li>
   <li class="active">Списки ключей</li>
 </ol>
 

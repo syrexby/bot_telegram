@@ -18,14 +18,13 @@ $set_bot = $set_bot->fetch(PDO::FETCH_ASSOC);
 
 $message	= $action['message']['text']; // текст сообщения от пользователя
 $chat		= $action['message']['chat']['id']; // ID чата
-//$chat		= '213586898'; // ID чата
+$chat		= '213586898'; // ID чата
 $username	= $action['message']['from']['username']; // username пользователя
 $first_name	= $action['message']['from']['first_name']; // имя пользователя
 $last_name	= $action['message']['from']['last_name']; // фамилия пользователя
 $token		= $set_bot['token']; // токен бота
 //291326668:AAEEkeDIluD-__nGzWl-qUetY_pwjDE6sSE
 //199870151:AAGiGx8yksHxX-oP_78N-0obO5tNzGae4UM
-
 
 $bot = new \TelegramBot\Api\BotApi($token);
 $slash = false;
@@ -216,64 +215,31 @@ function emojiToId($id){
 	return $numbers_result;
 }
 
-//$message = 'ПРАЙС';
-if ($message == 'ПРАЙС' || $message == '33'){
-    $cats = DB::$the->query("SELECT id,name,mesto FROM `sel_category` order by `mesto` ");
-	$cats = $cats->fetchAll();
-    $text = '';
-    $keys = [];
-    $keys[][] = 'Главное меню';
-    $i = 0;
-    $k = 0;
-	if (count($cats) > 0){
-    	foreach($cats as $cat) {
-			$subcats = DB::$the->query("SELECT id, name, mesto, amount FROM sel_subcategory WHERE id_cat = ".$cat['id']." order by mesto ");
-			$subcats = $subcats->fetchAll();
-			if (count($subcats) > 0) {
-				$text .= $cat['mesto'] . '. ' . urldecode($cat['name']) . ": \n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
-				foreach ($subcats as $subcat) {
-					$text .= urldecode($subcat['name']) . " (" . $subcat['amount'] . "руб) - ответ \"" .
-						$subcat['id'] . "\" \n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
-					$keys[][] = idToEmoji($subcat['id']) . " - " . urldecode($cat['name']) . " - ". urldecode($subcat['name']) .
-						" (" . $subcat['amount'] ."руб)";
-				}
-				$text .= "\n";
-			}
-		}
-    }
-    $keys[][] = 'Назад';
-	$text .= "Сделайте выбор и введите соответствующий номер \n";
-    $text .= "\n".$set_bot['footer'];
+//$message = 'raj143';
 
-
-    $keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup($keys, null, true);
-    $bot->sendMessage($chat, $text, false, null, null, $keyboard);
-    exit;
-}
-
-if(!empty($message)){
-	$message = mb_strstr($message, ' ', true) ?: $message;
-	$message = emojiToId($message);
-//	$bot->sendMessage($chat, $message);
-	// Проверяем наличие категории
-	$cat = DB::$the->query("SELECT id FROM `sel_subcategory` WHERE `name` = '".urlencode($message)."' ");
+if(!empty($message) && strpos($message, 'city') === 0){
+	$message = mb_substr($message, 4);
+	$cat = DB::$the->query("SELECT id FROM `sel_category` WHERE `id` = '".$message."' ");
 	$cat = $cat->fetchAll();
-
-	if (count($cat) > 0 && !$slash){
-		$message = urlencode($message);
+	if (count($cat) != 0){
 		$output = "";
 		require_once "./select.php";
 		exit;
 	} else{
-		$cat = DB::$the->query("SELECT id FROM `sel_subcategory` WHERE `id` = '".urlencode($message)."' ");
-		$cat = $cat->fetchAll();
-
-		if (count($cat) != 0){
-			$message = urlencode($message);
-			$output = "";
-			require_once "./select.php";
-			exit;
-		}
+		$bot->sendMessage($chat, 'Нет такого города!');
+	}
+}
+if(!empty($message) && strpos($message, 'raj') === 0){
+	$message = mb_substr($message, 3);
+	
+	$cat = DB::$the->query("SELECT id FROM `sel_subcategory` WHERE `id` = '".$message."' ");
+	$cat = $cat->fetchAll();
+	if (count($cat) != 0){
+		$output = "";
+		require_once "./select_raj.php";
+		exit;
+	} else{
+		$bot->sendMessage($chat, 'Нет такого района!');
 	}
 }
 /*if($user['cat'] > 0 && !empty($message)){
@@ -288,6 +254,46 @@ if(!empty($message)){
 		exit;
 	}
 }*/
+
+//$message = 'ПРАЙС';
+if ($message == 'ПРАЙС' || $message == '33'){
+	$cats = DB::$the->query("SELECT id,name,mesto FROM `sel_category` order by `mesto` ");
+	$cats = $cats->fetchAll();
+//	var_dump($cats);
+//	die;
+	$text = "Выберите город:\n";
+	$text .= "➖➖➖➖➖➖➖➖➖➖\n";
+	$keys = [];
+	$keys[][] = 'Главное меню';
+	$i = 0;
+	$k = 0;
+	if (count($cats) > 0){
+		foreach($cats as $cat) {
+			$subcats = DB::$the->query("SELECT id, name, mesto FROM sel_subcategory WHERE id_cat = ".$cat['id']." order by mesto ");
+			$subcats = $subcats->fetchAll();
+			if (count($subcats) > 0) {
+				$text .= '🏠'.$cat['mesto'] . '. ' . urldecode($cat['name']) . ": \n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
+				$text .= "[ Нажмите 👉 /city".$cat['id']."]\n";
+				$text .= "➖➖➖➖➖➖➖➖➖➖";
+				/*foreach ($subcats as $subcat) {
+					$text .= urldecode($subcat['name']) . " (" . $subcat['amount'] . "руб) - ответ \"" .
+						$subcat['id'] . "\" \n"; // ЭТО НАЗВАНИЕ КАТЕГОРИЙ
+					$keys[][] = idToEmoji($subcat['id']) . " - " . urldecode($cat['name']) . " - ". urldecode($subcat['name']) .
+						" (" . $subcat['amount'] ."руб)";
+				}*/
+				$text .= "\n";
+			}
+		}
+	}
+	$keys[][] = 'Назад';
+	$text .= "\n".$set_bot['footer'];
+
+
+	$keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup($keys, null, true);
+	$bot->sendMessage($chat, $text, false, null, null, $keyboard);
+	exit;
+}
+
 $text = urldecode($set_bot['hello'])."\n\n";
 $text .= "\n".$set_bot['footer'];
 $keys[][] = 'ПРАЙС';
