@@ -1,12 +1,12 @@
 <?
 //имя базы
-$dbn = $dbn ?: 'u0284566_secondbot';
+$dbn = $dbn ?: 'u0298511_sec';
 //имя сервера
 $dbh = $dbh ?: 'localhost';
 //порт
 $dbr = $dbr ?: '3306';
 //имя пользователя
-$dbu = $dbu ?: 'u0284566_bt';
+$dbu = $dbu ?: 'u0298511_bot';
 //пароль
 $dbp = $dbp ?: 'q';
 

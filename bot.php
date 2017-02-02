@@ -1,7 +1,7 @@
 <?php
 error_reporting(1) ; // включить все виды ошибок, включая  E_STRICT
 ini_set('display_errors', 'On');  // вывести на экран помимо логов
-//$dbp = 's';
+
 require 'classes/Curl.php';
 require 'classes/PDO.php';
 require 'vendor/autoload.php';
@@ -103,7 +103,7 @@ VALUES (:username, :first_name, :last_name, :chat, :time)");
 }
 
 // Если сделан запрос оплата
-if ($message == "оплата" or $message == "Оплата") {
+if ($message == "Я Оплатил(а)" or $message == "Я Оплатил(а)") {
 	require_once("./verification.php");
     exit;
 }
@@ -133,7 +133,7 @@ if ($message == "заказы" or $message == "Заказы") {
 	$bot->sendMessage($chat, $text, false, null, null, $keyboard);
 	exit;
 }*/
-if ($message == "0" or $message == "↪️Отмена" or $message == "Отмена" or $message == "Otmena") {
+if ($message == "0" or $message == "Otmena" or $message == "Отмена") {
 
 	DB::$the->prepare("UPDATE sel_users SET cat=? WHERE chat=? ")->execute(array("0", $chat));
 	DB::$the->prepare("UPDATE sel_keys SET block=? WHERE block_user=? ")->execute(array("0", $chat));
@@ -146,20 +146,20 @@ if ($message == "0" or $message == "↪️Отмена" or $message == "Отме
 	$warn = $warn->fetch(PDO::FETCH_ASSOC)['ban'];
 	switch($warn){
 		case 1:
-			$warn = 'Первое предупреждение!';
+			$warn = 'ПЕРВОЕ ПРЕДУПРЕЖДЕНИЕ!';
 			break;
 		case 2:
-			$warn = 'Второе предупреждение!';
+			$warn = 'ВТОРОЕ ПРЕДУПРЕЖДЕНИЕ!';
 			break;
 		case 3:
-			$warn = 'Вы успешно забанены!';
+			$warn = 'ВЫ ЗАБЛОКИРОВАНЫ';
 			break;
 	}
 
-	$keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup([['♻️Главное меню']/*, ['📦Оплата', '💰Заказы', '↪️Отмена'], ['🆘Помощь']*/], null, true);
-	$text = "🚫 Заказ отменен!
-	Запрещено резервировать товар без оплаты более трех раз.
-	{$warn}";
+	$keyboard = new \TelegramBot\Api\Types\ReplyKeyboardMarkup([['Ⓜ Главное меню']/*, ['📦Оплата', '💰Заказы', '↪️Отмена'], ['🆘Помощь']*/], null, true);
+	$text = "Заказ отменен!
+Запрещено резервировать товар без оплаты более трех раз.
+{$warn}";
 // Отправляем все это пользователю
 	$bot->sendMessage($chat, $text, false, null, null, $keyboard);
 
@@ -223,7 +223,7 @@ if ($message == 'ПРАЙС' || $message == '33'){
 	$cats = $cats->fetchAll();
     $text = '';
     $keys = [];
-    $keys[][] = 'Главное меню';
+    $keys[][] = 'Ⓜ Главное меню';
     $i = 0;
     $k = 0;
 	if (count($cats) > 0){
@@ -242,7 +242,7 @@ if ($message == 'ПРАЙС' || $message == '33'){
 			}
 		}
     }
-    $keys[][] = 'Назад';
+    $keys[][] = '⬅⬅Назад';
 	$text .= "Сделайте выбор и введите соответствующий номер \n";
     $text .= "\n".$set_bot['footer'];
 
@@ -277,18 +277,12 @@ if(!empty($message)){
 		}
 	}
 }
-/*if($user['cat'] > 0 && !empty($message)){
-	// Проверяем наличие товара
-	$cat = DB::$the->query("SELECT id FROM `sel_subcategory` WHERE `id_cat` = '".$user['cat']."' ");
-	$cat = $cat->fetchAll();
+if ($message == 'Выход' || $message == '6'){
+	$text .= "До встречи ";
+    $bot->sendMessage($chat, $text, false, null, null);
+    exit;
+}
 
-	if (count($cat) != 0)
-	{
-		$message = urlencode($message);
-		require_once "./select.php";
-		exit;
-	}
-}*/
 $text = urldecode($set_bot['hello'])."\n\n";
 $text .= "\n".$set_bot['footer'];
 $keys[][] = 'ПРАЙС';

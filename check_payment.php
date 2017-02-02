@@ -19,7 +19,8 @@ $nulled = DB::$the->query("SELECT id FROM `sel_keys` where `sale` = '0' and `blo
 $nulled = $nulled->fetchAll();
 //$bot->sendMessage($chat, count($nulled));
 if(count($nulled) > 0){
-    
+
+
     $query = DB::$the->query("SELECT block_user FROM `sel_keys` where `sale` = '0' and `block` = '1' and `block_time` < '".(time()-(60*$set_bot['block']))."' order by `id` ");
     while($us = $query->fetch()) {
         DB::$the->prepare("UPDATE sel_keys SET block=? WHERE block_user=? ")->execute(array("0", $us['block_user']));

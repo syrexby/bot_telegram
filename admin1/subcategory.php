@@ -60,19 +60,20 @@ case 'create':
 
 if(isset($_POST['create'])) {
 
-if($_POST['subcat'] != "") {
-$subcat=urlencode(trim($_POST['subcat']));
-
-$cat_m = DB::$the->query("SELECT mesto FROM `sel_subcategory` WHERE `id_cat` = {$category} order by `mesto` DESC limit 1 ");
-$cat_m = $cat_m->fetch(PDO::FETCH_ASSOC);
-$mesto = $cat_m['mesto']+1;
-
-$params = array('name' => $subcat, 'id_cat' => $category, 'time' => time(), 'mesto' => $mesto);  
- 
-$q= DB::$the->prepare("INSERT INTO `sel_subcategory` (name, id_cat, time, mesto) VALUES (:name, :id_cat, :time, :mesto)");  
-$q->execute($params);
-
-header("Location: ?category=$category");
+if($_POST['subcat'] != ""  and $_POST['amount'] != "") {
+    $subcat=urlencode(trim($_POST['subcat']));
+    $amount=$_POST['amount'];
+    
+    $cat_m = DB::$the->query("SELECT mesto FROM `sel_subcategory` WHERE `id_cat` = {$category} order by `mesto` DESC limit 1 ");
+    $cat_m = $cat_m->fetch(PDO::FETCH_ASSOC);
+    $mesto = $cat_m['mesto']+1;
+    
+    $params = array('name' => $subcat, 'id_cat' => $category, 'time' => time(), 'mesto' => $mesto, 'amount' => $amount);  
+     
+    $q= DB::$the->prepare("INSERT INTO `sel_subcategory` (name, id_cat, time, mesto, amount) VALUES (:name, :id_cat, :time, :mesto, :amount)");  
+    $q->execute($params);
+    
+    header("Location: ?category=$category");
 }
 else
 {
@@ -86,7 +87,12 @@ echo '<div class="alert alert-danger">Не заполнены все поля!</
 <div class="input-group input-group-lg">
 <span class="input-group-addon"><span class="glyphicon glyphicon-pencil"></span> </span>
 <input type="text" placeholder="Название раздела" class="form-control" name="subcat">
+<input type="text" placeholder="Цена ключей" class="form-control" name="amount">
 </div><br />
+<div class="input-group input-group-lg">
+    <span class="input-group-addon"><span class="glyphicon glyphicon-usd"></span> </span>
+    <input type="text" placeholder="Цена ключей" class="form-control" name="amount">
+</div>
 <button type="submit" name="create" class="btn btn-danger btn-lg btn-block" data-loading-text="Создаю">Создать</button></form>
 </div>
 <?
@@ -107,14 +113,16 @@ $subcat = $row->fetch(PDO::FETCH_ASSOC);
 // Редактирование раздел
 if(isset($_POST['edit'])) {
 
-if($_POST['name'] != "") {
-$name=urlencode(trim($_POST['name']));
-$mesto=intval($_POST['mesto']);
+if($_POST['name'] != "" and $_POST['amount'] != "") {
+    $name=urlencode(trim($_POST['name']));
+    $amount=$_POST['amount'];
+    $mesto=intval($_POST['mesto']);
+    
+    DB::$the->prepare("UPDATE sel_subcategory SET name=? WHERE id=? ")->execute(array("$name", $subcategory)); 
+    DB::$the->prepare("UPDATE sel_subcategory SET mesto=? WHERE id=? ")->execute(array("$mesto", $subcategory));
+    DB::$the->prepare("UPDATE sel_subcategory SET amount=? WHERE id=? ")->execute(array("$amount", $subcategory));
 
-DB::$the->prepare("UPDATE sel_subcategory SET name=? WHERE id=? ")->execute(array("$name", $subcategory)); 
-DB::$the->prepare("UPDATE sel_subcategory SET mesto=? WHERE id=? ")->execute(array("$mesto", $subcategory)); 
-
-header("Location: ?category=$category");
+    header("Location: ?category=$category");
 }
 else
 {
@@ -125,17 +133,22 @@ echo '<div class="alert alert-danger">Не заполнены все поля!</
 
 ?>
 <form action="?cmd=edit&category=<?=$category?>&subcategory=<?=$subcategory?>" method="POST">
-<div class="form-group col-sm-8">
-<div class="input-group input-group-lg">
-<span class="input-group-addon"><span class="glyphicon glyphicon-pencil"></span> </span>
-<input type="text" placeholder="<?=urldecode($subcat['name'])?>" class="form-control" name="name" value="<?=urldecode($subcat['name'])?>">
-</div><br />
-<div class="input-group input-group-lg">
-<span class="input-group-addon"><span class="glyphicon glyphicon-flag"></span> </span>
-<input type="text" placeholder="<?=$subcat['mesto']?>" class="form-control" name="mesto" value="<?=$subcat['mesto']?>">
-</div><br />
-<button type="submit" name="edit" class="btn btn-danger btn-lg btn-block" data-loading-text="Изменяю">Изменить</button>
-</div></form>
+    <div class="form-group col-sm-8">
+        <div class="input-group input-group-lg">
+        <span class="input-group-addon"><span class="glyphicon glyphicon-pencil"></span> </span>
+        <input type="text" placeholder="<?=urldecode($subcat['name'])?>" class="form-control" name="name" value="<?=urldecode($subcat['name'])?>">
+        </div><br />
+        <div class="input-group input-group-lg">
+        <span class="input-group-addon"><span class="glyphicon glyphicon-flag"></span> </span>
+        <input type="text" placeholder="<?=$subcat['mesto']?>" class="form-control" name="mesto" value="<?=$subcat['mesto']?>">
+        </div><br />
+        <div class="input-group input-group-lg">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-usd"></span> </span>
+            <input type="text" placeholder="<?=$subcat['amount']?>" class="form-control" name="amount" value="<?=$subcat['amount']?>">
+        </div><br />
+        <button type="submit" name="edit" class="btn btn-danger btn-lg btn-block" data-loading-text="Изменяю">Изменить</button>
+    </div>
+</form>
 <?
 
 	
@@ -191,7 +204,7 @@ default:
 
 $total = DB::$the->query("SELECT * FROM `sel_subcategory` where `id_cat` = {$category} ");
 $total = $total->fetchAll();
-$max = 5;
+$max = 15;
 $pages = $My_Class->k_page(count($total),$max);
 $page = $My_Class->page($pages);
 $start=($max*$page)-$max;

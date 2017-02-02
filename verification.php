@@ -59,8 +59,8 @@ DB::$the->prepare("UPDATE sel_users SET verification=? WHERE chat=? ")->execute(
 	sleep(2);
 	$curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
 		'chat_id' => $chat,
-		'text' => "ТОВАР НЕ ОПЛАЧЕН!\nПосле оплаты - нажмите кнопку \"Оплата\".
-Для отмены заказа напишите - Отмена или 0",
+		'text' => "ТОВАР НЕ ОПЛАЧЕН!\nПосле оплаты - нажмите кнопку \"Я Оплатил(а)\".
+Для отмены заказа напишите - Otmena или 0",
 	));
 	exit;
 	$curl->get('https://api.telegram.org/bot'.$token.'/sendMessage',array(
